@@ -92,7 +92,7 @@ void loop ()
 			{
 				Cold = 1;		// Cold change fron no to yes
 			}
-		{
+		}
 		if (Cold == 1 && PressCold < PressMin)	// Cold change from yes to no
 		{
 			Cold = 0;			// Cold change from yes to no
@@ -109,7 +109,7 @@ void loop ()
 			digitalWrite(RelOn,HIGH);	// power on relay
 			delay(DelaySwitch);		// wait for switch water
 			digitalWrite(RelOn,LOW);	// power off relay
-		{
+		}
 		if (Hot == 1 && PressHot < PressMin)	//Hot change from yes to no
 		{
   			Hot = 0;			// Hot change from yes to no
@@ -177,4 +177,3 @@ void loop ()
 		Auto = 0;
 	}
 }
-
