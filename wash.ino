@@ -23,7 +23,7 @@ int DelaySwitch = 10000;	  //  Время для переключения вен
 int Cold = 0;			  // Status cold relay
 int Hot = 0;			  // Status hot relay
 int Boiler = 0;			  // Status boiler relay
-int Auto = 1;			  // Status auto
+int AutoStatus = 1;			  // Status auto
 
 // ?2 - ????? ???????? ???????? ????
 // ?3 - ????? ???????? ??????? ????
@@ -83,7 +83,7 @@ void setup ()
 }
 void loop ()
 {
-	if (Auto == 1) 				// Auto option on
+	if (AutoStatus == 1) 				// AutoStatus option on
 	{
 		PressCold = analogRead(SenCold);// Read cold pressure
 		if (Cold == 0)		        // was not before cold water
@@ -124,7 +124,7 @@ void loop ()
 		}
 		delay(DelaySleep);			// sleep between measure (10 min)
 	}
-	if (Auto == 0) // manual control
+	if (AutoStatus == 0) // manual control
 	{
 		if (Cold == 0 && S-cold == HIGH)        // switch on cold water
 		{
@@ -166,14 +166,14 @@ void loop ()
 			Boiler = 0;
 		}
 	}
-	if (Auto == 0 && S-auto == HIGH) 		// switch auto on
+	if (AutoStatus == 0 && S-auto == HIGH) 		// switch auto on
 	{
 		digitalWrite(L-auto, HIGH);		// switch auto led on
-		Auto = 1;				// switch auto on
+		AutoStatus = 1;				// switch auto on
 	}
-	if (Auto == 1 && S-auto == LOW)			// switch auto off
+	if (AutoStatus == 1 && S-auto == LOW)			// switch auto off
 	{
 		digitalWrite(L-auto, LOW);		// switch auto led off
-		Auto = 0;
+		AutoStatus = 0;
 	}
 }
