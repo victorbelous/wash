@@ -1,34 +1,30 @@
 // Программа для бойлера в ванной
 // Пока она вручную открывает и закрывает вентили и
 // включает и выключает бойлер
-const int Scold = 13;	          //  Switch cold pin
-const int Shot = 12;	          // Switch hot pin
-const int Sboil = 11;	          // Switch boiler pin
-const int Sauto = 10;	          // Switch auto/manual pin
-const int Lcold = 9;	          // Led cold pin
-const int Lhot = 8;	          // Led hot pin
-const int Lboil = 7;	          // Led boiler pin
-const int Lauto = 6;	          // Led auto pin
-const int RelCold = 5;	          // Relay cold 1 pin
-const int RelHot = 4;	          // Relay hot 2 pin
-const int RelBoil = 3;	          // Relay boiler 3 pin
-const int RelOn = 2;	          // Relay power on 4 pin
-const int PressMin = 100;	  // Pressure min
-unsigned long DelaySleep = 600000; // 10 min test circle
+const byte Scold = 13;	          //  Switch cold pin
+const byte Shot = 12;	          // Switch hot pin
+const byte Sboil = 11;	          // Switch boiler pin
+const byte Sauto = 10;	          // Switch auto/manual pin
+const byte Lcold = 9;	          // Led cold pin
+const byte Lhot = 8;	          // Led hot pin
+const byte Lboil = 7;	          // Led boiler pin
+const byte Lauto = 6;	          // Led auto pin
+const byte RelCold = 5;	          // Relay cold 1 pin
+const byte RelHot = 4;	          // Relay hot 2 pin
+const byte RelBoil = 3;	          // Relay boiler 3 pin
+const byte RelOn = 2;	          // Relay power on 4 pin
+const byte PressMin = 100;	  // Pressure min
+unsigned long DelaySleep = 600; // 10 min test circle
 int PressCold;			  // Pressure cold variable
 int PressHot;			  // Pressure hot variable
 int SenCold = 0;		  //  Sensor cold A0 pin
 int SenHot = 1;			  // Sensor hot A1 pin
-int DelaySwitch = 10;	  //  Время для переключения вентиля
-int Cold = 0;			  // Status cold relay
-int Hot = 0;			  // Status hot relay
-int Boiler = 0;			  // Status boiler relay
-int AutoStatus = 1;			  // Status auto
-int ButtonState;            // текущее состояние кнопки
-int LastState = LOW;        // предыдущее состояние кнопки
-long LastDebTime = 0;          // последнее время, когда кнопка переключалась
-long DebDelay = 50;        // время затухания дребезга кнопки
-int LedState = HIGH;        // Текущее состояние выходного пина
+int DelaySwitch = 1000;	  //  Время для переключения вентиля
+boolean Cold = LOW;			  // Status cold relay
+boolean PredCold;			  // Предыдущее состояние холодного реле
+boolean Hot = LOW;			  // Status hot relay
+boolean Boiler = LOW;			  // Status boiler relay
+boolean AutoStatus = HIGH;			  // Status auto
 
 
 // ?2 - ????? ???????? ???????? ????
@@ -65,63 +61,50 @@ void setup ()
 	{
 		digitalWrite(RelCold, HIGH);	// open cold water
 		digitalWrite(Lcold, HIGH);	// light cold led
-		Cold = 1;			// cold water yes
+		Cold = HIGH;			// cold water yes
 	}
 	PressHot = analogRead(SenHot);		// read hot pressure
 	if (PressHot > PressMin)		// if hot water
 	{
 		digitalWrite(RelHot, HIGH);	// open hot water
 		digitalWrite(Lhot, HIGH);	// light hot led
-		Hot = 1;			// hot water yes
+		Hot = HIGH;			// hot water yes
 	}
 	else					// no hot water
 	{
-		if (Cold == 1)			// cold water yes
+		if (Cold == HIGH)			// cold water yes
 		{
 			digitalWrite(RelBoil, HIGH);	// switch on boiler
 			digitalWrite(Lboil, HIGH);	// light led boiler
-			Boiler = 1;			// boiler yes
+			Boiler = HIGH;			// boiler yes
 		}
 	}
 	delay(DelaySwitch);                     // wait to switch water
 	digitalWrite(Lauto, HIGH);		// light led auto
 	digitalWrite(RelOn, LOW);		// switch off relay power
         Serial.begin(9600);  // для отладки
-      
+        AutoStatus = HIGH;   // auto on    
 }
 void loop ()
 
 {
-  AutoStatus=digitalRead(Sauto);
-  if (AutoStatus != LastState)
-    {
-      LastDebTime = millis();
-    }
-  if ((millis() - LastDebTime) > DebDelay)
-  {
-    if (AutoStatus != ButtonState)
-    {
-      ButtonState = AutoStatus;
-      if (ButtonState == HIGH) 
-      {
-        LedState = !LedState;
-      }
-    }
-  }  
+
   Serial.print("SenCold=");  
   Serial.println(SenCold);
   Serial.print("AutoStatus=");
   Serial.println(AutoStatus);
-  
-  	if (AutoStatus == 1) 				// AutoStatus option on
+    AutoStatus = pressButton(Sauto, AutoStatus);
+      Serial.print("AutoStatus=");
+  Serial.println(AutoStatus);
+  	if (AutoStatus == HIGH) 				// AutoStatus option on
 	{
+          Serial.println("HIGH");
 		PressCold = analogRead(SenCold);// Read cold pressure
           Serial.print("PressCold=");
           Serial.println(PressCold);
           Serial.print("Cold=");
           Serial.println(Cold);
-          Serial.print("PressMin=");
-          Serial.println(PressMin);
+
 		if (Cold == 0)		        // was not before cold water
 		{
 			if (PressCold > PressMin)	// Cold water yes
@@ -165,56 +148,92 @@ void loop ()
 		}
 		delay(DelaySleep);			// sleep between measure (10 min)
 	}
-	if (AutoStatus == 0) // manual control
+	if (AutoStatus == LOW) // manual control
 	{
-		if (Cold == 0 && Scold == HIGH)        // switch on cold water
+                         Serial.println("LOW");
+                         Cold = pressButton(Scold, Cold);
+		if (Cold == LOW)        // switch on cold water
 		{
 			digitalWrite(RelCold, HIGH);	// cold relay on
 			digitalWrite(Lcold, HIGH);	//cold led on
-			Cold = 1;			// cold on
+
 			digitalWrite(RelOn, HIGH);	// power on relay
 			delay(DelaySwitch);		// wait for swich water
 			digitalWrite(RelOn, LOW);	// power off relay
 		}
-		if (Cold == 1 && Scold == LOW)	        // swich off cold water
+		else	        // swich off cold water
 		{
 			digitalWrite(RelCold, LOW);	// cold relay off
 			digitalWrite(Lcold, LOW);	// cold led off
-			Cold = 0;			// cold off
+
 			digitalWrite(RelOn, HIGH);	// power on relay
 			delay(DelaySwitch);		// wait for switch water
 			digitalWrite(RelOn, LOW);	// power off relay
 		}
-		if (Hot == 0 && Shot == HIGH)		// switch on hot water
+                         Hot = pressButton(Shot, Hot);
+		if (Hot == LOW)		// switch on hot water
 		{
 			digitalWrite(RelHot, HIGH);	// hot relay on
 			digitalWrite(Lhot, HIGH);	// hot led on
-			Hot = 1;			// hot on
 			digitalWrite(RelOn, HIGH);	// power on relay
 			delay(DelaySwitch);		// wait for switch water
 			digitalWrite(RelOn, LOW);	// power off relay
 		}
-		if (Boiler == 0 && Sboil == HIGH);	// switch on boiler
+                Boiler = pressButton(Sboil, Boiler);
+		if (Boiler == LOW)	// switch on boiler
 		{
 			digitalWrite(RelBoil, HIGH);	// switch on boiler
 			digitalWrite(Lboil, HIGH);	// switch on led boiler
-			Boiler = 1;			// Boiler on
 		}
-		if (Boiler == 1 && Sboil == LOW);	// switch off boiler
+		else	// switch off boiler
 		{
 			digitalWrite(RelBoil, LOW);	// switch off boiler
 			digitalWrite(Lboil, LOW);	// switch off led boiler
-			Boiler = 0;
+		
 		}
 	}
-	if (AutoStatus == 0 && Sauto == HIGH) 		// switch auto on
+	if (AutoStatus == HIGH) 		// switch auto on
 	{
 		digitalWrite(Lauto, HIGH);		// switch auto led on
-		AutoStatus = 1;				// switch auto on
+
 	}
-	if (AutoStatus == 1 && Sauto == LOW)			// switch auto off
+	else			// switch auto off
 	{
 		digitalWrite(Lauto, LOW);		// switch auto led off
-		AutoStatus = 0;
 	}
+}
+boolean pressButton(byte nButton, boolean LastState)
+{
+ boolean Status; //   состояние кнопки
+
+  unsigned int DebDelay = 100;  // задержка мс
+  unsigned int LastDebTime;    // предыдущая задержка
+
+delay(3000); 
+  Status=digitalRead(nButton);
+   Serial.print("pressButton Status =");
+ Serial.println(Status);
+  Serial.print("nButton=");
+  Serial.println(nButton);
+    Serial.print("LastState=");
+  Serial.println(LastState);
+  if (Status != LastState)
+    {
+      LastDebTime = millis();
+      Serial.print("LastDebTime=");
+      Serial.println(LastDebTime);
+
+    }
+  if ((millis() - LastDebTime) > DebDelay)
+  {
+    if (Status != LastState)
+    {
+ 
+      if (Status == HIGH) 
+      {
+        Status = !Status;
+      }
+    }
+  }  
+return Status;
 }
