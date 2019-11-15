@@ -122,7 +122,7 @@
     <VMSETTING_IncludePaths>../../../wash;C:/Program Files (x86)/Arduino/libraries;C:/Users/bvict/Documents/Arduino/libraries;C:/Program Files (x86)/Arduino/hardware/arduino/avr/libraries;C:/Program Files (x86)/Arduino/hardware/arduino/avr/cores/arduino;C:/Program Files (x86)/Arduino/hardware/arduino/avr/variants/standard;C:/Program Files (x86)/Arduino/hardware/tools/avr/avr/include;C:/Program Files (x86)/Arduino/hardware/tools/avr/avr/include/avr;C:/Program Files (x86)/Arduino/hardware/tools/avr/lib/gcc/avr/4.9.2/include;C:/Program Files (x86)/Arduino/hardware/tools/avr/lib/gcc/avr/4.9.3/include;</VMSETTING_IncludePaths>
     <VisualMicroSettings>
       <VisualMicroSettings>
-        <arduino.upload.port>COM3</arduino.upload.port>
+        <arduino.upload.port>COM4</arduino.upload.port>
         <debug.view.DigitalPins>1</debug.view.DigitalPins>
       </VisualMicroSettings>
     </VisualMicroSettings>
@@ -208,7 +208,7 @@
     <VMSETTING_IncludePaths>../../../wash;C:/Program Files (x86)/Arduino/libraries;C:/Users/bvict/Documents/Arduino/libraries;C:/Program Files (x86)/Arduino/hardware/arduino/avr/libraries;C:/Program Files (x86)/Arduino/hardware/arduino/avr/cores/arduino;C:/Program Files (x86)/Arduino/hardware/arduino/avr/variants/standard;C:/Program Files (x86)/Arduino/hardware/tools/avr/avr/include;C:/Program Files (x86)/Arduino/hardware/tools/avr/avr/include/avr;C:/Program Files (x86)/Arduino/hardware/tools/avr/lib/gcc/avr/4.9.2/include;C:/Program Files (x86)/Arduino/hardware/tools/avr/lib/gcc/avr/4.9.3/include;</VMSETTING_IncludePaths>
     <VisualMicroSettings>
       <VisualMicroSettings>
-        <arduino.upload.port>COM3</arduino.upload.port>
+        <arduino.upload.port>COM4</arduino.upload.port>
         <debug.view.DigitalPins>1</debug.view.DigitalPins>
       </VisualMicroSettings>
     </VisualMicroSettings>

@@ -20,6 +20,7 @@
 #define ARDUINO_ARCH_AVR
 //
 //
+boolean pressButton(byte nButton, boolean LastState);
 
 #include "pins_arduino.h" 
 #include "arduino.h"
