@@ -208,7 +208,7 @@ boolean pressButton(byte nButton, boolean LastState)
 
   unsigned int DebDelay = 100;  // задержка мс
   unsigned int LastDebTime;    // предыдущая задержка
-
+int i;
 //delay(3000); 
   Status=digitalRead(nButton);
 //   Serial.print("pressButton Status =");
@@ -235,5 +235,6 @@ boolean pressButton(byte nButton, boolean LastState)
       }
     }
   }  
+ i=1;
 return Status;
 }
