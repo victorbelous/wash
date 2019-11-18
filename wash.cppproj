@@ -140,6 +140,8 @@
         <arduino.upload.port>COM4</arduino.upload.port>
         <debug.view.DigitalPins>1</debug.view.DigitalPins>
         <debug.view.AnalogPins>1</debug.view.AnalogPins>
+        <debug.view.FreeMemory>
+        </debug.view.FreeMemory>
       </VisualMicroSettings>
     </VisualMicroSettings>
   </PropertyGroup>
@@ -229,6 +231,8 @@
         <arduino.upload.port>COM4</arduino.upload.port>
         <debug.view.DigitalPins>1</debug.view.DigitalPins>
         <debug.view.AnalogPins>1</debug.view.AnalogPins>
+        <debug.view.FreeMemory>
+        </debug.view.FreeMemory>
       </VisualMicroSettings>
     </VisualMicroSettings>
   </PropertyGroup>

@@ -24,7 +24,10 @@ boolean Cold = HIGH;			  // Status cold relay
 boolean PredCold;			  // Предыдущее состояние холодного реле
 boolean Hot = HIGH;			  // Status hot relay
 boolean Boiler = LOW;			  // Status boiler relay
-boolean AutoStatus = HIGH;			  // Status auto
+int AutoStatus = HIGH;			  // current Status auto
+int Status;				// Last Status
+int OldStatus;
+int OldPress;          // previously press button
 
 
 
@@ -53,14 +56,14 @@ void setup () {
 	
 //	digitalWrite(RelOn, HIGH); 	  // relay power on
 //	delay(DelaySwitch);               // 10 sec for run switch
-	PressCold = analogRead(SenCold);  // read cold pressure
+	PressCold = analogRead(A0);  // read cold pressure
 	if (PressCold > PressMin)	  // if cold water
 	{
 		digitalWrite(RelCold, HIGH);	// open cold water
 		digitalWrite(Lcold, HIGH);	// light cold led
 		Cold = HIGH;			// cold water yes
 	}
-	PressHot = analogRead(SenHot);		// read hot pressure
+	PressHot = analogRead(A1);		// read hot pressure
 	if (PressHot > PressMin)		// if hot water
 	{
 		digitalWrite(RelHot, HIGH);	// open hot water
@@ -79,162 +82,65 @@ void setup () {
 	delay(DelaySwitch);                     // wait to switch water
 	digitalWrite(Lauto, HIGH);		// light led auto
 	digitalWrite(RelOn, LOW);		// switch off relay power
-        Serial.begin(9600);  // для отладки
+//        Serial.begin(9600);  // для отладки
         AutoStatus = HIGH;   // auto on    
+		OldPress = 1;
+		OldStatus = 1;
 }
 
 
 
 void loop () {
-
-
-
-//  Serial.print("SenCold=");  
-//  Serial.println(SenCold);
-//  Serial.print("AutoStatus=");
-//  Serial.println(AutoStatus);
-    AutoStatus = pressButton(Sauto, AutoStatus);
-//      Serial.print("AutoStatus=");
-//  Serial.println(AutoStatus);
+	
+	Status = digitalRead(Sauto);
+	if (Status == 0 && OldPress == 1)
+	{
+		OldStatus = !OldStatus;
+		OldPress = 0; // press button	
+	}
+	if (Status == 1)
+	{
+		OldPress = 1;
+	}
+//	else OldStatus = 1;
+	AutoStatus = OldStatus;	
+//    AutoStatus = pressButton(Sauto, Status);
+//	AutoStatus = Status;
   	if (AutoStatus == HIGH) 				// AutoStatus option on
 	{
-//          Serial.println("HIGH");
-		PressCold = analogRead(SenCold);// Read cold pressure
-//          Serial.print("PressCold=");
-//          Serial.println(PressCold);
-//          Serial.print("Cold=");
-//          Serial.println(Cold);
-
-		if (Cold == 0)		        // was not before cold water
-		{
-			if (PressCold > PressMin)	// Cold water yes
+		digitalWrite(Lauto, HIGH);		// Auto led on  6
+		PressCold = analogRead(A0);// Read cold pressure
+		PressHot = analogRead(A1); // Read hot pressure
+		if (PressCold > PressMin) {
+			if (PressHot > PressMin) {
+				if (Boiler == LOW) {
+					goto endloop;
+				}
+				else {
+					digitalWrite(Lboil, LOW);		// Boiler led off 7
+					digitalWrite(RelBoil, LOW);		// Boil relay off 3
+				}
+			}
+			
+			
+		}
+		else { // no cold water
+		
+			for ( byte i=0; i < 5; i++)
 			{
-				Cold = 1;		// Cold change from no to yes
+				digitalWrite(Lcold, HIGH); // 9
+				delay(200);
+				digitalWrite(Lcold, LOW);
+				delay(200);
 			}
 		}
-		if (Cold == 1 && PressCold < PressMin)	// Cold change from yes to no
-		{
-			Cold = 0;			// Cold change from yes to no
-		}
-		PressHot = analogRead(SenHot);		// Читаю холодное давление
-//          Serial.print("Hot=");
-//          Serial.println(Hot);
-//          Serial.print("PressHot=");
-//          Serial.println(PressHot);
-          
-		if (Hot == 0 && PressHot > PressMin)	// Hot change from no to yes
-		{
-			Hot = 1;			// Hot change from no to yes
-			digitalWrite(RelHot,HIGH);	// Open Hot water
-			digitalWrite(Lhot,HIGH);	// light hot led
-			digitalWrite(RelBoil, HIGH);	// boiler relay on
-			digitalWrite(Lboil, HIGH);	// boiler led on
-			Boiler = 1;			// boiler on
-			digitalWrite(RelOn,HIGH);	// power on relay
-			delay(DelaySwitch);		// wait for switch water
-			digitalWrite(RelOn,LOW);	// power off relay
-		}
-		if (Hot == 1 && PressHot < PressMin)	//Hot change from yes to no
-		{
-  			Hot = 0;			// Hot change from yes to no
-			digitalWrite(RelHot,LOW);	// Hot close
-			digitalWrite(Lhot,LOW);	// down hot led
-			digitalWrite(RelBoil, LOW);	// boiler relay off
-			digitalWrite(Lboil, LOW);	// boiler led off
-			Boiler = 0;			// boiler off
-			digitalWrite(RelOn,HIGH);	// power on relay
-			delay(DelaySwitch);		// wait for switch water
-			digitalWrite(RelOn,LOW);	// power off relay
-		}
-		delay(DelaySleep);			// sleep between measure (10 min)
 	}
-	if (AutoStatus == LOW) // manual control
-	{
- //                        Serial.println("LOW");
-                         Cold = pressButton(Scold, Cold);
-		if (Cold == LOW)        // switch on cold water
-		{
-			digitalWrite(RelCold, HIGH);	// cold relay on
-			digitalWrite(Lcold, HIGH);	//cold led on
+	else {
+	
+				digitalWrite(Lauto, LOW);		// Auto led off
 
-			digitalWrite(RelOn, HIGH);	// power on relay
-			delay(DelaySwitch);		// wait for swich water
-			digitalWrite(RelOn, LOW);	// power off relay
-		}
-		else	        // swich off cold water
-		{
-			digitalWrite(RelCold, LOW);	// cold relay off
-			digitalWrite(Lcold, LOW);	// cold led off
-
-			digitalWrite(RelOn, HIGH);	// power on relay
-			delay(DelaySwitch);		// wait for switch water
-			digitalWrite(RelOn, LOW);	// power off relay
-		}
-                         Hot = pressButton(Shot, Hot);
-		if (Hot == LOW)		// switch on hot water
-		{
-			digitalWrite(RelHot, HIGH);	// hot relay on
-			digitalWrite(Lhot, HIGH);	// hot led on
-			digitalWrite(RelOn, HIGH);	// power on relay
-			delay(DelaySwitch);		// wait for switch water
-			digitalWrite(RelOn, LOW);	// power off relay
-		}
-                Boiler = pressButton(Sboil, Boiler);
-		if (Boiler == LOW)	// switch on boiler
-		{
-			digitalWrite(RelBoil, HIGH);	// switch on boiler
-			digitalWrite(Lboil, HIGH);	// switch on led boiler
-		}
-		else	// switch off boiler
-		{
-			digitalWrite(RelBoil, LOW);	// switch off boiler
-			digitalWrite(Lboil, LOW);	// switch off led boiler
-		
-		}
-	}
-	if (AutoStatus == HIGH) 		// switch auto on
-	{
-		digitalWrite(Lauto, HIGH);		// switch auto led on
 
 	}
-	else			// switch auto off
-	{
-		digitalWrite(Lauto, LOW);		// switch auto led off
-	}
-}
-boolean pressButton(byte nButton, boolean LastState)
-{
- boolean Status; //   состояние кнопки
-
-  unsigned int DebDelay = 100;  // задержка мс
-  unsigned int LastDebTime;    // предыдущая задержка
-int i;
-//delay(3000); 
-  Status=digitalRead(nButton);
-//   Serial.print("pressButton Status =");
-// Serial.println(Status);
-//  Serial.print("nButton=");
-//  Serial.println(nButton);
-//    Serial.print("LastState=");
-//  Serial.println(LastState);
-  if (Status != LastState)
-    {
-      LastDebTime = millis();
-//      Serial.print("LastDebTime=");
-//      Serial.println(LastDebTime);
-
-    }
-  if ((millis() - LastDebTime) > DebDelay)
-  {
-    if (Status != LastState)
-    {
- 
-//      if (Status == HIGH) 
-      {
-        Status = !Status;
-      }
-    }
-  }  
- i=1;
-return Status;
+	
+	endloop: ;
 }
