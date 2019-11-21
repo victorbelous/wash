@@ -53,53 +53,52 @@ void setup () {
 	pinMode(RelHot, OUTPUT);		// Hot relay pin
 	pinMode(RelBoil, OUTPUT);		// Boil relay pin
 	pinMode(RelOn, OUTPUT);			// Power relay pin
-	digitalWrite(Lcold, HIGH);		// Cold led on
-	digitalWrite(Lhot, HIGH);		// Hot led on
-	digitalWrite(Lboil, LOW);		// Boiler led off
-	digitalWrite(Lauto, HIGH);		// Auto led on
-	digitalWrite(RelCold, HIGH);	// Cold relay on
-	digitalWrite(RelHot, HIGH);		// Hot relay on
-	digitalWrite(RelBoil, LOW);		// Boil relay on
+
 
 	
 //	digitalWrite(RelOn, HIGH); 	  // relay power on
 //	delay(DelaySwitch);               // 10 sec for run switch
-	PressCold = analogRead(A0);  // read cold pressure
-	if (PressCold > PressMin)	  // if cold water
-	{
-		digitalWrite(RelCold, HIGH);	// open cold water
-		digitalWrite(Lcold, HIGH);	// light cold led
-		ColdStatus = HIGH;			// cold water yes
+	if ( analogRead(A0) > PressMin) {
+		PressCold = HIGH;						// Cold water yes
 	}
-	PressHot = analogRead(A1);		// read hot pressure
-	if (PressHot > PressMin)		// if hot water
+	else PressCold = LOW;					// Cold water no
+	if (analogRead(A1) > PressMin)
 	{
-		digitalWrite(RelHot, HIGH);	// open hot water
-		digitalWrite(Lhot, HIGH);	// light hot led
-		HotStatus = HIGH;			// hot water yes
+		PressHot = HIGH;					// Hot Water yes
 	}
-	else					// no hot water
-	{
-		if (ColdStatus == HIGH)			// cold water yes
-		{
-			digitalWrite(RelBoil, HIGH);	// switch on boiler
-			digitalWrite(Lboil, HIGH);	// light led boiler
-			BoilerStatus = HIGH;			// boiler yes
-		}
-	}
+	else PressHot = LOW;					// Hot water no	PressCold = analogRead(A0);  // read cold pressure
+	
 	delay(DelaySwitch);                     // wait to switch water
-	digitalWrite(Lauto, HIGH);		// light led auto
-	digitalWrite(RelOn, LOW);		// switch off relay power
 //        Serial.begin(9600);  // для отладки
-        AutoStatus = HIGH;   // auto on    
+        AutoStatus = HIGH;   // auto on
+		BoilerStatus = LOW;	// boiler off
+		BoilerOld = LOW;
+		ColdStatus = HIGH;	// cold water on
+		ColdOld = HIGH;
+		HotStatus = HIGH;	// how water on    
+		HotOld = HIGH;
 		OldPress = HIGH;
 		OldStatus = HIGH;
+	digitalWrite(Lauto, AutoStatus);		// light led auto
+//	digitalWrite(RelOn, LOW);		// switch off relay power
+		digitalWrite(Lcold, ColdStatus);		// Cold led off 9
+		digitalWrite(RelCold, ColdStatus);		// Cold relay off 5
+		digitalWrite(Lboil, BoilerStatus);		// Boiler led off 7
+		digitalWrite(RelBoil, BoilerStatus);	// Boil relay off 3
+		digitalWrite(Lhot, HotStatus);		// Boiler led off 8
+		digitalWrite(RelHot, HotStatus);		// Boil relay off 4
 }
 
 
 
 void loop () {
 	delay(300);
+	digitalWrite(Lcold, ColdStatus);		// Cold led off 9
+	digitalWrite(RelCold, ColdStatus);		// Cold relay off 5
+	digitalWrite(Lboil, BoilerStatus);		// Boiler led off 7
+	digitalWrite(RelBoil, BoilerStatus);	// Boil relay off 3
+	digitalWrite(Lhot, HotStatus);		// Boiler led off 8
+	digitalWrite(RelHot, HotStatus);		// Boil relay off 4
 	Status = digitalRead(Sauto);
 	if (Status == LOW && OldPress == HIGH)
 	{
@@ -112,42 +111,6 @@ void loop () {
 	}
 	AutoStatus = OldStatus;	
 	digitalWrite(Lauto, AutoStatus);		// Auto led on  6
-	Status = digitalRead(Sboil);	// pin 11
-	if (Status == LOW && BoilerPress == HIGH)
-	{
-		BoilerOld = !BoilerOld;
-		BoilerPress = LOW; // press button
-	}
-	if (Status == HIGH)
-	{
-		BoilerPress = HIGH;
-	}
-	BoilerStatus = BoilerOld;
-
-	Status = digitalRead(Shot);			// pin 12
-	if (Status == LOW && HotPress == HIGH)
-	{
-		HotOld = !HotOld;
-		HotPress = LOW; // press button
-	}
-	if (Status == HIGH)
-	{
-		HotPress = HIGH;
-	}
-	HotStatus = HotOld;
-	digitalWrite(Lhot, HotStatus);		// Boiler led off 8
-	digitalWrite(RelHot, HotStatus);		// Boil relay off 4
-	Status = digitalRead(Scold);			// pin 12
-	if (Status == LOW && ColdPress == HIGH)
-	{
-		ColdOld = !ColdOld;
-		ColdPress = LOW; // press button
-	}
-	if (Status == HIGH)
-	{
-		ColdPress = HIGH;
-	}
-	ColdStatus = ColdOld;
 
 	if ( analogRead(A0) > PressMin) {
 		PressCold = HIGH;						// Cold water yes
@@ -167,8 +130,16 @@ void loop () {
 				if (BoilerStatus == HIGH) {
 					digitalWrite(Lboil, LOW);		// Boiler led off 7
 					digitalWrite(RelBoil, LOW);		// Boil relay off 3
+					BoilerStatus = LOW;
 				}
+				HotStatus = HIGH; //hot water on
 			}
+			else { // no hot water
+				BoilerStatus = HIGH; // boiler on
+				HotStatus = LOW; // hot water off
+			} 
+			ColdStatus = HIGH; // cold water must be on
+
 		}
 		else { // no cold water
 				digitalWrite(Lcold, HIGH); // 9
@@ -177,46 +148,82 @@ void loop () {
 				delay(100);
 				if (BoilerStatus == HIGH)
 				{
-					digitalWrite(Lboil, LOW);		// Boiler led off 7
-					digitalWrite(RelBoil, LOW);		// Boil relay off 3
+					BoilerStatus = LOW;		// boiler off
+//					digitalWrite(Lboil, LOW);		// Boiler led off 7
+//					digitalWrite(RelBoil, LOW);		// Boil relay off 3
 				}
 		}
 	}
 	else {	// Autostatus == LOW
-		digitalWrite(Lcold, ColdStatus);		// Cold led off 9
-		digitalWrite(RelCold, ColdStatus);		// Cold relay off 5
+		// read button
+		Status = digitalRead(Sboil);	// pin 11
+		if (Status == LOW && BoilerPress == HIGH)
+		{
+			BoilerOld = !BoilerOld;
+			BoilerPress = LOW; // press button
+		}
+		if (Status == HIGH)
+		{
+			BoilerPress = HIGH;
+		}
+		BoilerStatus = BoilerOld;
+
 		digitalWrite(Lboil, BoilerStatus);		// Boiler led off 7
 		digitalWrite(RelBoil, BoilerStatus);	// Boil relay off 3
 		if (BoilerStatus == HIGH)
 		{
 			if (PressCold == HIGH && ColdStatus == HIGH)
 			{
-				if (HotStatus == LOW)
+				if (HotStatus == HIGH) // hot water up
 				{
-					BoilerStatus = HIGH;	// in next loop boiler up
-				}
-				else {
 					HotStatus = LOW;       // in next loop hot water down
+
 				}
+			}
+			else {
+				BoilerStatus = LOW;
+				BoilerOld = LOW;
 			}
 			if (PressCold == LOW)			// No cold water
 			{
 				BoilerStatus = LOW;			// switch off boiler
 				digitalWrite(Lboil, BoilerStatus);		// Boiler led off 7
 				digitalWrite(RelBoil, BoilerStatus);		// Boil relay off 3			
-				digitalWrite(Lcold, HIGH); // 9
-				delay(100);
-				digitalWrite(Lcold, LOW);
-				delay(100);	
+
 			}
 		}
-		if (ColdStatus == LOW)
+	else { // boiler off
+		Status = digitalRead(Shot);			// pin 12
+		if (Status == LOW && HotPress == HIGH)
 		{
-			BoilerStatus = LOW;			// switch off boiler
-			digitalWrite(Lboil, LOW);		// Boiler led off 7
-			digitalWrite(RelBoil, LOW);		// Boil relay off 3
-//			digitalWrite(Lcold, LOW); // 9	
+			HotOld = !HotOld;
+			HotPress = LOW; // press button
+		}
+		if (Status == HIGH)
+		{
+			HotPress = HIGH;
+		}
+		HotStatus = HotOld;
+		Status = digitalRead(Scold);			// pin 12
+		if (Status == LOW && ColdPress == HIGH)
+		{
+			ColdOld = !ColdOld;
+			ColdPress = LOW; // press button
+		}
+		if (Status == HIGH)
+		{
+			ColdPress = HIGH;
+		}
+		ColdStatus = ColdOld;
+		if (PressCold == LOW && ColdStatus == HIGH)
+		{
+			digitalWrite(Lcold, HIGH); // 9
+			delay(100);
+			digitalWrite(Lcold, LOW);
+			delay(100);
 		}
 	}
-	endloop: ;
+	}
+	
 }
+
