@@ -15,6 +15,7 @@ const byte RelBoil = 3;	          // Relay boiler 3 pin
 const byte RelOn = 2;	          // Relay power on 4 pin
 const byte PressMin = 100;	  // Pressure min
 unsigned long DelaySleep = 600; // 10 min test circle
+unsigned long OldTime;		// running time
 int PressCold;			  // Pressure cold variable
 int PressHot;			  // Pressure hot variable
 int SenCold = 0;		  //  Sensor cold A0 pin
@@ -70,23 +71,35 @@ void setup () {
 	
 	delay(DelaySwitch);                     // wait to switch water
 //        Serial.begin(9600);  // для отладки
-        AutoStatus = HIGH;   // auto on
-		BoilerStatus = LOW;	// boiler off
-		BoilerOld = LOW;
-		ColdStatus = HIGH;	// cold water on
-		ColdOld = HIGH;
-		HotStatus = HIGH;	// how water on    
-		HotOld = HIGH;
-		OldPress = HIGH;
-		OldStatus = HIGH;
+    AutoStatus = HIGH;   // auto on
+	BoilerStatus = HIGH;	// boiler on
+	BoilerOld = LOW;
+	ColdStatus = LOW;	// cold water on
+	ColdOld = HIGH;
+	HotStatus = LOW;	// how water on    
+	HotOld = HIGH;
+	OldPress = HIGH;
+	OldStatus = HIGH;
 	digitalWrite(Lauto, AutoStatus);		// light led auto
-//	digitalWrite(RelOn, LOW);		// switch off relay power
-		digitalWrite(Lcold, ColdStatus);		// Cold led off 9
-		digitalWrite(RelCold, ColdStatus);		// Cold relay off 5
-		digitalWrite(Lboil, BoilerStatus);		// Boiler led off 7
-		digitalWrite(RelBoil, BoilerStatus);	// Boil relay off 3
-		digitalWrite(Lhot, HotStatus);		// Boiler led off 8
-		digitalWrite(RelHot, HotStatus);		// Boil relay off 4
+	digitalWrite(RelOn, HIGH);		// switch on relay power
+	digitalWrite(Lboil, BoilerStatus);		// Boiler led off 7
+	digitalWrite(RelBoil, BoilerStatus);	// Boil relay off 3
+	digitalWrite(Lcold, ColdStatus);		// Cold led off 9
+	digitalWrite(RelCold, ColdStatus);		// Cold relay off 5
+	digitalWrite(Lhot, HotStatus);		// Boiler led off 8
+	digitalWrite(RelHot, HotStatus);		// Boil relay off 4
+	delay(20000);							// wait to end
+	ColdStatus = HIGH;
+	HotStatus = HIGH;
+	BoilerStatus = LOW;
+	digitalWrite(Lboil, BoilerStatus);		// Boiler led off 7
+	digitalWrite(RelBoil, BoilerStatus);	// Boil relay off 3
+	digitalWrite(Lcold, ColdStatus);		// Cold led off 9
+	digitalWrite(RelCold, ColdStatus);		// Cold relay off 5
+	digitalWrite(Lhot, HotStatus);		// Boiler led off 8
+	digitalWrite(RelHot, HotStatus);		// Boil relay off 4
+	delay(20000);
+	digitalWrite(RelOn, LOW);				// Power off
 }
 
 
