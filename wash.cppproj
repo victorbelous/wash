@@ -68,7 +68,6 @@
     <ListValues>
       <Value>__AVR_ATmega328p__</Value>
       <Value>__AVR_ATmega328P__</Value>
-      <Value>_VMDEBUG=1</Value>
       <Value>ARDUINO=108010</Value>
       <Value>ARDUINO_MAIN</Value>
       <Value>F_CPU=16000000L</Value>
@@ -103,7 +102,6 @@
     <ListValues>
       <Value>__AVR_ATmega328p__</Value>
       <Value>__AVR_ATmega328P__</Value>
-      <Value>_VMDEBUG=1</Value>
       <Value>ARDUINO=108010</Value>
       <Value>ARDUINO_MAIN</Value>
       <Value>F_CPU=16000000L</Value>
@@ -137,7 +135,7 @@
     <VMSETTING_IncludePaths>../../../wash;C:/Program Files (x86)/Arduino/libraries;C:/Users/bvict/Documents/Arduino/libraries;C:/Program Files (x86)/Arduino/hardware/arduino/avr/libraries;C:/Program Files (x86)/Arduino/hardware/arduino/avr/cores/arduino;C:/Program Files (x86)/Arduino/hardware/arduino/avr/variants/standard;C:/Program Files (x86)/Arduino/hardware/tools/avr/avr/include;C:/Program Files (x86)/Arduino/hardware/tools/avr/avr/include/avr;C:/Program Files (x86)/Arduino/hardware/tools/avr/lib/gcc/avr/4.9.2/include;C:/Program Files (x86)/Arduino/hardware/tools/avr/lib/gcc/avr/4.9.3/include;</VMSETTING_IncludePaths>
     <VisualMicroSettings>
       <VisualMicroSettings>
-        <arduino.upload.port>COM4</arduino.upload.port>
+        <arduino.upload.port>COM3</arduino.upload.port>
         <debug.view.DigitalPins>1</debug.view.DigitalPins>
         <debug.view.AnalogPins>1</debug.view.AnalogPins>
         <debug.view.FreeMemory>
@@ -159,7 +157,6 @@
     <ListValues>
       <Value>__AVR_ATmega328p__</Value>
       <Value>__AVR_ATmega328P__</Value>
-      <Value>_VMDEBUG=1</Value>
       <Value>ARDUINO=108010</Value>
       <Value>ARDUINO_MAIN</Value>
       <Value>F_CPU=16000000L</Value>
@@ -194,7 +191,6 @@
     <ListValues>
       <Value>__AVR_ATmega328p__</Value>
       <Value>__AVR_ATmega328P__</Value>
-      <Value>_VMDEBUG=1</Value>
       <Value>ARDUINO=108010</Value>
       <Value>ARDUINO_MAIN</Value>
       <Value>F_CPU=16000000L</Value>
@@ -228,7 +224,7 @@
     <VMSETTING_IncludePaths>../../../wash;C:/Program Files (x86)/Arduino/libraries;C:/Users/bvict/Documents/Arduino/libraries;C:/Program Files (x86)/Arduino/hardware/arduino/avr/libraries;C:/Program Files (x86)/Arduino/hardware/arduino/avr/cores/arduino;C:/Program Files (x86)/Arduino/hardware/arduino/avr/variants/standard;C:/Program Files (x86)/Arduino/hardware/tools/avr/avr/include;C:/Program Files (x86)/Arduino/hardware/tools/avr/avr/include/avr;C:/Program Files (x86)/Arduino/hardware/tools/avr/lib/gcc/avr/4.9.2/include;C:/Program Files (x86)/Arduino/hardware/tools/avr/lib/gcc/avr/4.9.3/include;</VMSETTING_IncludePaths>
     <VisualMicroSettings>
       <VisualMicroSettings>
-        <arduino.upload.port>COM4</arduino.upload.port>
+        <arduino.upload.port>COM3</arduino.upload.port>
         <debug.view.DigitalPins>1</debug.view.DigitalPins>
         <debug.view.AnalogPins>1</debug.view.AnalogPins>
         <debug.view.FreeMemory>
